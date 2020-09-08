@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from ct import PATH_TO_TRAIN, PATH_TO_TEST, SURVIVED, PATH_TO_PRED
+from ct import PATH_TO_TRAIN, PATH_TO_TEST, SURVIVED, PATH_TO_PRED, PASSENGER_ID
 import pandas as pd
 import numpy as np
 
@@ -34,11 +34,24 @@ def prepare_train_data() \
     return train_x, train_y, test_x, test_y
 
 
-def prepare_test_data() -> np.array:
+def prepare_test_data() -> Tuple[np.array, np.array]:
     full_dataset = read_test()
     df = Parser().parse(full_dataset, test=True)
-    return df.to_numpy()
+    return full_dataset[PASSENGER_ID].to_numpy(), df.to_numpy()
 
 
-def save_predictions(pred: np.array, path: str = PATH_TO_PRED):
-    np.savetxt(path, pred, delimiter=',')
+def save_predictions(pass_id: np.array, pred: np.array, path: str = PATH_TO_PRED):
+    res_df = pd.DataFrame({PASSENGER_ID: pass_id, SURVIVED: pred})
+    res_df.to_csv(path, index=False)
+
+
+def custom_metric(ground_truth: np.array, predictions: np.array):
+    predictions = (predictions > 0.5).astype(int).reshape(-1)
+    tp = sum(ground_truth & predictions)
+    tn = sum((1 - ground_truth) & (1 - predictions))
+    fp = sum(np.logical_xor(ground_truth, predictions) * predictions)
+    fn = sum(np.logical_xor(ground_truth, predictions) * (1 - predictions))
+    recall = tp / (tp + fn)
+    precision = tp / (tp + fp)
+    f1 = 2 * recall * precision / (recall + precision)
+    return tp, tn, fp, fn, recall, precision, f1

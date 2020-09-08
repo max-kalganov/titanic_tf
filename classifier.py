@@ -1,33 +1,49 @@
+from typing import Optional
+
 from ct import LOG_DIR, MODEL_DIR
-from utils import prepare_train_data, prepare_test_data, save_predictions
+from utils import prepare_train_data, prepare_test_data, save_predictions, custom_metric
 import numpy as np
 import tensorflow as tf
 
 
 def train_model(train_x: np.array, train_y: np.array,
                 test_x: np.array, test_y: np.array) -> tf.keras.models.Model:
-    num_params = train_x.shape[1]
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=LOG_DIR, histogram_freq=1)
 
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Dense(num_params, activation='relu'),
-        tf.keras.layers.Dense(num_params, activation='relu'),
-        tf.keras.layers.Dense(num_params, activation='relu'),
-        tf.keras.layers.Dense(num_params, activation='relu'),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(num_params, activation='relu'),
+        tf.keras.layers.Dense(30, activation='relu'),
+        tf.keras.layers.Dense(60, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(100, activation='relu'),
+        tf.keras.layers.Dense(200, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(300, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(200, activation='relu'),
+        tf.keras.layers.Dense(100, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(80, activation='relu'),
+        tf.keras.layers.Dense(30, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.BinaryCrossentropy(),
-                  metrics=['accuracy'])
+                  metrics=['accuracy',
+                           tf.keras.metrics.Recall(thresholds=0.5),
+                           tf.keras.metrics.Precision(thresholds=0.5)])
     model.fit(train_x,
               train_y,
-              epochs=500,
+              epochs=300,
+              validation_data=(test_x, test_y),
               callbacks=[tensorboard_callback])
 
     print("evaluate:")
     model.evaluate(test_x, test_y, verbose=2)
+
+    print(f"custom metric for train: {custom_metric(train_y, classify(train_x, model))}")
+    print(f"custom metric for test: {custom_metric(test_y, classify(test_x, model))}")
+
     return model
 
 
@@ -42,13 +58,17 @@ def train_and_save_model():
     model.save(MODEL_DIR, save_format='h5')
 
 
-def classify():
-    model = tf.keras.models.load_model(MODEL_DIR)
-    test_data = prepare_test_data()
-    pred = model.predict(test_data)
+def classify(test_data, model: Optional = None):
+    model = tf.keras.models.load_model(MODEL_DIR) if model is None else model
+    return model.predict(test_data)
+
+
+def classify_and_save():
+    pass_id, test_data = prepare_test_data()
+    pred = classify(test_data)
     format_pred = (pred > 0.5).astype(int)
-    save_predictions(format_pred.reshape(-1))
+    save_predictions(pass_id, format_pred.reshape(-1))
 
 
 if __name__ == '__main__':
-    classify()
+    classify_and_save()
