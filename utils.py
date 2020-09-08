@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from ct import PATH_TO_TRAIN, SURVIVED
+from ct import PATH_TO_TRAIN, PATH_TO_TEST, SURVIVED, PATH_TO_PRED
 import pandas as pd
 import numpy as np
 
@@ -8,6 +8,10 @@ from parser import Parser
 
 
 def read_train(path: str = PATH_TO_TRAIN) -> pd.DataFrame:
+    return pd.read_csv(path)
+
+
+def read_test(path: str = PATH_TO_TEST) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
@@ -22,10 +26,19 @@ def split_train_test(df: pd.DataFrame, test_size: float = 0.2)\
            test.drop(SURVIVED, axis=1).to_numpy(), test[SURVIVED].to_numpy()
 
 
-def prepare_data() \
+def prepare_train_data() \
         -> Tuple[np.array, np.array, np.array, np.array]:
     full_dataset = read_train()
     df = Parser().parse(full_dataset)
     train_x, train_y, test_x, test_y = split_train_test(df)
     return train_x, train_y, test_x, test_y
 
+
+def prepare_test_data() -> np.array:
+    full_dataset = read_test()
+    df = Parser().parse(full_dataset, test=True)
+    return df.to_numpy()
+
+
+def save_predictions(pred: np.array, path: str = PATH_TO_PRED):
+    np.savetxt(path, pred, delimiter=',')

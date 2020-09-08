@@ -1,6 +1,7 @@
 ################
 # COLUMNS
 ################
+from datetime import datetime
 
 PASSENGER_ID = "PassengerId"
 SURVIVED = "Survived"
@@ -31,6 +32,9 @@ KEY_COLUMNS = {
 
 PATH_TO_TRAIN = "data/train.csv"
 PATH_TO_TEST = "data/test.csv"
+LOG_DIR = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+MODEL_DIR = "data/model"
+PATH_TO_PRED = "data/predictions.csv"
 
 MALE = "male"
 FEMALE = "female"

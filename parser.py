@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Parser:
-    def parse(self, df: pd.DataFrame) -> pd.DataFrame:
+    def parse(self, df: pd.DataFrame, test: bool = False) -> pd.DataFrame:
         df_cp = df.copy()
 
         df_cp = self.select_key_columns(df_cp)
@@ -13,7 +13,8 @@ class Parser:
         # TODO: remove outliers -- df_cp = self.remove_outliers(df_cp)
         df_cp = self.normalize_data(df_cp)
         df_cp = self.replace_nan(df_cp)
-        return pd.concat([df_cp, df[SURVIVED]], axis=1)
+        res_df = df_cp if test else pd.concat([df_cp, df[SURVIVED]], axis=1)
+        return res_df
 
     def remove_outliers(self, df: pd.DataFrame) -> pd.DataFrame:
         raise NotImplemented
