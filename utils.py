@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from ct import PATH_TO_TRAIN, PATH_TO_TEST, SURVIVED, PATH_TO_PRED, PASSENGER_ID
+from constants import PATH_TO_TRAIN, PATH_TO_TEST, SURVIVED, PATH_TO_PRED, PASSENGER_ID
 import pandas as pd
 import numpy as np
 

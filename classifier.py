@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ct import LOG_DIR, MODEL_DIR
+from constants import LOG_DIR, MODEL_DIR
 from utils import prepare_train_data, prepare_test_data, save_predictions, custom_metric
 import numpy as np
 import tensorflow as tf
