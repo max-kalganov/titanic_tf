@@ -16,6 +16,12 @@ def read_test(path: str = PATH_TO_TEST) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+def get_x_y(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
+    assert SURVIVED in df.columns, f"labels are not found in dataset columns. {df.columns=}"
+    df_cp = df.copy()
+    return df_cp.drop(SURVIVED, axis=1).to_numpy(), df_cp[SURVIVED].to_numpy()
+
+
 def split_train_test(df: pd.DataFrame, train_test_split: float = 0.8) -> Tuple[np.array, np.array, np.array, np.array]:
     # TODO: make smart split (choose not randomly, but equally from each group)
     assert train_test_split < 1, f"too big train_test_split = {train_test_split}"
@@ -24,8 +30,9 @@ def split_train_test(df: pd.DataFrame, train_test_split: float = 0.8) -> Tuple[n
     train = df_rand[:train_size]
     test = df_rand[train_size:]
     assert len(test) + len(train) == len(df), f"wrong size test + train != df"
-    return train.drop(SURVIVED, axis=1).to_numpy(), train[SURVIVED].to_numpy(), \
-           test.drop(SURVIVED, axis=1).to_numpy(), test[SURVIVED].to_numpy()
+    train_x, train_y = get_x_y(train)
+    test_x, test_y = get_x_y(test)
+    return train_x, train_y, test_x, test_y
 
 
 def prepare_train_data() -> pd.DataFrame:
@@ -34,8 +41,8 @@ def prepare_train_data() -> pd.DataFrame:
 
 
 def prepare_test_data() -> pd.DataFrame:
-    full_dataset = read_test()
-    return DatasetFormatter().format(full_dataset, test=True)
+    df = read_test()
+    return DatasetFormatter().format(df, test=True)
 
 
 def save_predictions(pass_ids: np.array, preds: np.array, path: str = PATH_TO_PRED):

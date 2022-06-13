@@ -1,7 +1,7 @@
 from typing import Optional
 
-from constants import LOG_DIR, MODEL_DIR
-from utils import prepare_train_data, prepare_test_data, save_predictions, pr_rec_f1
+from constants import LOG_DIR, MODEL_DIR, PASSENGER_ID
+from utils import prepare_test_data, save_predictions, pr_rec_f1, split_train_test, prepare_train_data
 import numpy as np
 import tensorflow as tf
 
@@ -51,26 +51,28 @@ def train_model(train_x: np.array, train_y: np.array,
 
 
 def train_and_save_model():
-    print("reading data..")
-    train_x, train_y, test_x, test_y = prepare_train_data()
+    print("Reading data..")
+    df = prepare_train_data()
+    train_x, train_y, test_x, test_y = split_train_test(df)
     assert train_x.shape[0] == train_y.shape[0]
     assert test_x.shape[0] == test_y.shape[0]
+    print(f"Shapes: {train_x.shape=}, {test_x.shape=}")
 
-    print("start classifying..")
+    print("Start classifying..")
     model = train_model(train_x, train_y, test_x, test_y)
     model.save(MODEL_DIR, save_format='h5')
 
 
-def classify(test_data, model: Optional = None):
+def classify(test_data: np.ndarray, model: Optional = None):
     model = tf.keras.models.load_model(MODEL_DIR) if model is None else model
     return model.predict(test_data)
 
 
 def classify_and_save():
-    pass_id, test_data = prepare_test_data()
-    pred = classify(test_data)
+    test_data = prepare_test_data()
+    pred = classify(test_data.to_numpy())
     format_pred = (pred > 0.5).astype(int)
-    save_predictions(pass_id, format_pred.reshape(-1))
+    save_predictions(test_data[PASSENGER_ID].to_numpy(), format_pred.reshape(-1))
 
 
 if __name__ == '__main__':
