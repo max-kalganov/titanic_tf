@@ -73,8 +73,3 @@ def classify_and_save():
     pred = classify(formated_test_df.to_numpy())
     format_pred = (pred > 0.5).astype(int)
     save_predictions(full_test_df[PASSENGER_ID].to_numpy(), format_pred.reshape(-1))
-
-
-if __name__ == '__main__':
-    # train_and_save_model()
-    classify_and_save()
