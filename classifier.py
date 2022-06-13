@@ -69,12 +69,12 @@ def classify(test_data: np.ndarray, model: Optional = None):
 
 
 def classify_and_save():
-    test_data = prepare_test_data()
-    pred = classify(test_data.to_numpy())
+    full_test_df, formated_test_df = prepare_test_data()
+    pred = classify(formated_test_df.to_numpy())
     format_pred = (pred > 0.5).astype(int)
-    save_predictions(test_data[PASSENGER_ID].to_numpy(), format_pred.reshape(-1))
+    save_predictions(full_test_df[PASSENGER_ID].to_numpy(), format_pred.reshape(-1))
 
 
 if __name__ == '__main__':
-    train_and_save_model()
-    # classify_and_save()
+    # train_and_save_model()
+    classify_and_save()

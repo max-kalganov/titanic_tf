@@ -40,9 +40,9 @@ def prepare_train_data() -> pd.DataFrame:
     return DatasetFormatter().format(full_dataset)
 
 
-def prepare_test_data() -> pd.DataFrame:
+def prepare_test_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     df = read_test()
-    return DatasetFormatter().format(df, test=True)
+    return df, DatasetFormatter().format(df, test=True)
 
 
 def save_predictions(pass_ids: np.array, preds: np.array, path: str = PATH_TO_PRED):

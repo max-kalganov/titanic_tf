@@ -38,8 +38,8 @@ NUM_FEATURES_COLUMNS = {
 PATH_TO_TRAIN = "data/train.csv"
 PATH_TO_TEST = "data/test.csv"
 LOG_DIR = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-MODEL_DIR = "data/model"
-PATH_TO_PRED = "data/predictions.csv"
+MODEL_DIR = "data/models/model"
+PATH_TO_PRED = "data/test_predictions/predictions.csv"
 
 ############################
 # CATEGORICAL VALUES
