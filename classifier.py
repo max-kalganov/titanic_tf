@@ -1,7 +1,7 @@
 from typing import Optional
 
 from constants import LOG_DIR, MODEL_DIR
-from utils import prepare_train_data, prepare_test_data, save_predictions, custom_metric
+from utils import prepare_train_data, prepare_test_data, save_predictions, pr_rec_f1
 import numpy as np
 import tensorflow as tf
 
@@ -41,8 +41,11 @@ def train_model(train_x: np.array, train_y: np.array,
     print("evaluate:")
     model.evaluate(test_x, test_y, verbose=2)
 
-    print(f"custom metric for train: {custom_metric(train_y, classify(train_x, model))}")
-    print(f"custom metric for test: {custom_metric(test_y, classify(test_x, model))}")
+    tp, tn, fp, fn, recall, precision, f1 = pr_rec_f1(train_y, classify(train_x, model))
+    test_tp, test_tn, test_fp, test_fn, test_recall, test_precision, test_f1 = pr_rec_f1(test_y, classify(test_x, model))
+    print(f"Metrics for train: {tp=}, {tn=}, {fp=}, {fn=}, {recall=}, {precision=}, {f1=}")
+    print(f"Metrics for test: "
+          f"{test_tp=}, {test_tn=}, {test_fp=}, {test_fn=}, {test_recall=}, {test_precision=}, {test_f1=}")
 
     return model
 
@@ -71,4 +74,5 @@ def classify_and_save():
 
 
 if __name__ == '__main__':
-    classify_and_save()
+    train_and_save_model()
+    # classify_and_save()

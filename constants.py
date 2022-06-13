@@ -2,6 +2,7 @@
 # COLUMNS
 ############################
 from datetime import datetime
+import numpy as np
 
 PASSENGER_ID = "PassengerId"
 SURVIVED = "Survived"
@@ -26,6 +27,10 @@ KEY_COLUMNS = {
     EMBARKED
 }
 
+NUM_FEATURES_COLUMNS = {
+    PCLASS
+}
+
 ############################
 # PATHS
 ############################
@@ -46,3 +51,12 @@ FEMALE = "female"
 CHERBOURG = "C"
 QUEENSTOWN = "Q"
 SOUTHAMPTON = "S"
+
+CATEG_TO_FLOAT = {
+    FEMALE: 0.,
+    MALE: 1.,
+    CHERBOURG: -1.,
+    QUEENSTOWN: 0.,
+    SOUTHAMPTON: 1.,
+    np.nan: -100
+}
