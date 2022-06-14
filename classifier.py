@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 
 from constants import LOG_DIR, MODEL_DIR, PASSENGER_ID
@@ -11,18 +12,6 @@ def train_model(train_x: np.array, train_y: np.array,
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=LOG_DIR, histogram_freq=1)
 
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Dense(64, activation='relu'),
-        tf.keras.layers.Dropout(0.3),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.3),
-        tf.keras.layers.Dense(256, activation='sigmoid'),
-        tf.keras.layers.Dropout(0.3),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.3),
-        tf.keras.layers.Dense(64, activation='relu'),
-        tf.keras.layers.Dropout(0.3),
-        tf.keras.layers.Dense(30, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     model.compile(optimizer='adam',
@@ -32,7 +21,7 @@ def train_model(train_x: np.array, train_y: np.array,
                            tf.keras.metrics.Precision(thresholds=0.5)])
     model.fit(train_x,
               train_y,
-              epochs=300,
+              epochs=200,
               validation_data=(test_x, test_y),
               callbacks=[tensorboard_callback])
 
@@ -67,6 +56,7 @@ def classify(test_data: np.ndarray, model: Optional = None):
 
 
 def classify_and_save():
+    random.seed(1)
     full_test_df, formated_test_df = prepare_test_data()
     pred = classify(formated_test_df.to_numpy())
     format_pred = (pred > 0.5).astype(int)
