@@ -40,6 +40,8 @@ PATH_TO_TEST = "data/test.csv"
 LOG_DIR = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 MODEL_DIR = "data/models/model"
 PATH_TO_PRED = "data/test_predictions/predictions.csv"
+VIS_CONFIG_PATH = "configs/visualization.gin"
+
 
 ############################
 # CATEGORICAL VALUES
