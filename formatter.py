@@ -14,9 +14,10 @@ class DatasetFormatter:
         return df.fillna(value=df.mean())
 
     def col_vals_to_float(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self._format_col(df, ct.SEX)
-        df = self._format_col(df, ct.EMBARKED)
-        return df.astype(np.float64)
+        return pd.get_dummies(df)
+        # df = self._format_col(df, ct.SEX)
+        # df = self._format_col(df, ct.EMBARKED)
+        # return df.astype(np.float64)
 
     @staticmethod
     def _format_col(df: pd.DataFrame, col: str):
