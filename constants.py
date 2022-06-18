@@ -24,7 +24,9 @@ KEY_COLUMNS = {
     SIBSP,
     PARCH,
     FARE,
-    EMBARKED
+    EMBARKED,
+    CABIN,
+    SURVIVED
 }
 
 NUM_FEATURES_COLUMNS = {

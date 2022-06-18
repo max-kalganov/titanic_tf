@@ -4,6 +4,9 @@ import pandas as pd
 import plotly.express as px
 
 import constants as ct
+from formatter import DatasetFormatter
+
+frmt = DatasetFormatter()
 
 
 def get_plot_path(plot_name: str) -> str:
@@ -11,6 +14,11 @@ def get_plot_path(plot_name: str) -> str:
 
 
 def visualize_dataset(df: pd.DataFrame):
+    px.histogram(df, x=ct.PASSENGER_ID, facet_row=ct.SURVIVED).write_html(get_plot_path('scatter_id'))
+
+    px.parallel_categories(frmt.cabine_to_class(df), color=ct.SURVIVED)\
+        .write_html(get_plot_path('parallel_coordinates_cabines'))
+
     px.parallel_categories(df,
                            dimensions=[ct.PCLASS, ct.SEX, ct.EMBARKED, ct.PARCH, ct.SIBSP, ct.SURVIVED],
                            color=ct.AGE,

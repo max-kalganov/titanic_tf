@@ -53,6 +53,7 @@ def save_predictions(pass_ids: np.array, preds: np.array, path: str = PATH_TO_PR
 @gin.configurable
 def pr_rec_f1(ground_truth: np.array, predictions: np.array, threshold: float = 0.5):
     predictions = (predictions > threshold).astype(int).reshape(-1)
+    ground_truth = ground_truth.astype(int)
     tp = sum(ground_truth & predictions)
     tn = sum((1 - ground_truth) & (1 - predictions))
     fp = sum(np.logical_xor(ground_truth, predictions) * predictions)
