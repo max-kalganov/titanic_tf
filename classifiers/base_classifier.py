@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 import random
 import gin
 
-from constants import PASSENGER_ID
+from constants import PASSENGER_ID, PATH_TO_PRED
 from utils import prepare_train_data, split_train_test, prepare_test_data, save_predictions
 
 
@@ -39,7 +39,7 @@ class BaseClassifier(ABC):
         self.train_model(train_x, train_y, test_x, test_y)
 
 
-def train_and_save_model(classifier, do_classify: bool = False):
+def train_and_save_model(classifier, do_classify: bool = False, output_path: str = PATH_TO_PRED):
     print("Reading data..")
     df = prepare_train_data()
     train_x, train_y, test_x, test_y = split_train_test(df)
@@ -54,13 +54,13 @@ def train_and_save_model(classifier, do_classify: bool = False):
         classifier.save()
 
     if do_classify:
-        print("Classifying !!!")
-        classify_and_save(classifier)
+        print(f"Classifying !!! in output path = {output_path}")
+        classify_and_save(classifier, output_path=output_path)
 
 
-def classify_and_save(classifier):
+def classify_and_save(classifier, output_path: str = PATH_TO_PRED):
     random.seed(1)
     full_test_df, formated_test_df = prepare_test_data()
     pred = classifier.classify(formated_test_df.to_numpy())
     format_pred = (pred > 0.5).astype(int)
-    save_predictions(full_test_df[PASSENGER_ID].to_numpy(), format_pred.reshape(-1))
+    save_predictions(full_test_df[PASSENGER_ID].to_numpy(), format_pred.reshape(-1), output_path)
