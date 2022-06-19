@@ -10,9 +10,10 @@ import tensorflow as tf
 
 
 class CustomClassifier(BaseClassifier):
-    def __init__(self, model_dir: Optional[str] = None):
+    def __init__(self, model_dir: Optional[str] = None, epochs_num: int = 300):
         super().__init__()
         self.model_dir = model_dir if model_dir is not None else MODEL_DIR
+        self.epochs_num = epochs_num
 
     @gin.configurable
     def _init_model(self, *args, **kwargs):
@@ -40,7 +41,7 @@ class CustomClassifier(BaseClassifier):
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=LOG_DIR, histogram_freq=1)
         self.model.fit(train_x,
                        train_y,
-                       epochs=300,
+                       epochs=self.epochs_num,
                        validation_data=(test_x, test_y),
                        callbacks=[tensorboard_callback])
 
