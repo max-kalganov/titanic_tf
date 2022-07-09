@@ -10,19 +10,22 @@ import tensorflow as tf
 
 
 class CustomClassifier(BaseClassifier):
-    def __init__(self, model_dir: Optional[str] = None, epochs_num: int = 300):
+    def __init__(self, model_dir: Optional[str] = None, epochs_num: int = 200, patience: int = 10):
         super().__init__()
         self.model_dir = model_dir if model_dir is not None else MODEL_DIR
+        self.patience = patience
         self.epochs_num = epochs_num
 
     @gin.configurable
     def _init_model(self, *args, **kwargs):
         """Initializes model"""
         model = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(3, activation='relu'),
-            tf.keras.layers.Dense(5, activation='relu'),
-            tf.keras.layers.Dense(3, activation='relu'),
-            tf.keras.layers.Dense(3, activation='relu'),
+            tf.keras.layers.Dense(300, activation='tanh'),
+            tf.keras.layers.Dropout(0.9),
+            tf.keras.layers.Dense(500, activation='tanh'),
+            tf.keras.layers.Dropout(0.9),
+            tf.keras.layers.Dense(100, activation='tanh'),
+            tf.keras.layers.Dropout(0.9),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
         model.compile(optimizer='adam',
@@ -36,14 +39,23 @@ class CustomClassifier(BaseClassifier):
         model = tf.keras.models.load_model(self.model_dir) if self.model is None else self.model
         return model.predict(test_data)
 
+    def _lr_sheduler(self, epoch, lr):
+        return lr if epoch < self.patience else lr * tf.math.exp(-0.1)
+
     def train_model(self, train_x, train_y, test_x, test_y):
         """Trains model using self.model"""
+        print(f"{train_x.shape=}, {test_x.shape=}")
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=LOG_DIR, histogram_freq=1)
+        lr_sheduler_callback = tf.keras.callbacks.LearningRateScheduler(self._lr_sheduler)
+        early_stop_callback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=self.patience + 10)
+
         self.model.fit(train_x,
                        train_y,
                        epochs=self.epochs_num,
                        validation_data=(test_x, test_y),
-                       callbacks=[tensorboard_callback])
+                       callbacks=[tensorboard_callback,
+                                  lr_sheduler_callback,
+                                  early_stop_callback])
 
         print("evaluate:")
         self.model.evaluate(test_x, test_y, verbose=2)

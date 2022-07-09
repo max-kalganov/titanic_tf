@@ -40,8 +40,10 @@ NUM_FEATURES_COLUMNS = {
 PATH_TO_TRAIN = "data/train.csv"
 PATH_TO_TEST = "data/test.csv"
 LOG_DIR = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-MODEL_DIR = "data/models/model"
-PATH_TO_PRED = "data/test_predictions/predictions.csv"
+MODEL_DIR = "data/models/model.h5"
+PATH_TO_PRED_DIR = "data/test_predictions"
+PATH_TO_PRED = PATH_TO_PRED_DIR + "/predictions.csv"
+
 VIS_CONFIG_PATH = "configs/visualization.gin"
 VIS_PLOTS_DIR = "data/plots"
 
